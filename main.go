@@ -35,11 +35,23 @@ var (
 	RequestId        = flag.Int("ID", 0, "Enter id of the code")
 	PurchaseQuantity = flag.Int("quantity", 0, "Enter amount that you would like to purchase")
 )
+var usage = `Usage: ./homework-2-week-3-FevziYuksel [options...] [urls...]
+Options:
+	-command 	Enter a command which you would like perform
+				list, search, get, delete and buy
+	-name		Enter name of the book which you would like see
+	-ID 		Enter ID of the book which you would like see
+	-quantity	Enter quantity amount which you would like buy
+`
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprint(os.Stderr, fmt.Sprintf(usage))
+	}
+	flag.Parse()
+
 	bookList := BookSlice{}
 	bookList.fillBookList()
-	flag.Parse()
 
 	switch *Command {
 	case "list":
@@ -53,13 +65,7 @@ func main() {
 	case "buy":
 		bookList.buyBook(RequestId, PurchaseQuantity)
 	default:
-		multiLine := "Valid commands are: \n" +
-			"list => list all books \n" +
-			"search => search and fetch books by name  \n" +
-			"get => fetch a single book by id \n" +
-			"delete => delete a single book by id \n" +
-			"buy => buy a single book by requested quantity \n"
-		fmt.Printf("%s", multiLine)
+		flag.Usage()
 	}
 
 }
