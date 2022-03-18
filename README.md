@@ -1,63 +1,50 @@
 ## Homework | Week 3
-`Not: Ödevi yeni bir repoya ekleyeceksiniz. Var olan reponuzda bir güncelleme olmayacak. "homework-2..." şeklinde yeni bir repo üzerinde çalışacaksınız.`
 
-
-Elimizde bir kitap listesi var. 
-Kitap alanları şöyle;
+Simple library application 
+We have a book list
+Book filed are like these;
 ```
-- Kitap ID
-- Kitap Adı
-- Sayfa Sayısı
-- Stok Sayısı
-- Fiyatı
-- Stock Kodu
+- Book ID
+- Book Name
+- Page Number
+- Stock Number
+- Price
+- Stock Code
 - ISBN
-- Yazar bilgisi (ID ve İsim)
+- Author Info (ID and Name)
 ```
 
-1. Tüm kitapları listele (list)
-2. Verilen girdi hangi kitap isimlerinde geçiyorsa o kitapları listele (search)
-3. ID'ye göre kitabı yazdır
-4. IDsi verilen kitabı sil. (Silinen kitabın ID'ye göre geliyor olması gerekiyor.)
-5. IDsi verilen kitabı istenilen adet kadar satın al ve kitabın son bilgilerini ekrana yazdır.
+1. List all books (list)
+2. List books which contain entered word (search)
+3. Print books by ID
+4. Delete books by entered ID. 
+5. Buy a book by ID and print its last fields.
 
-Yanlış komut girildiğinde ekrana usage'ı yazdıracak. 
+If the command is invalid Usage would be printed. 
 
-
-Concurrency ile ilgili medium yazısı yazılacak. 
 
 ### list command
 ```
-go run main.go list
+go run main.go -command list
 ```
 
 ### search command 
 ```
-go run main.go search <bookName>
-go run main.go search Lord of the Ring: The Return of the King
+go run main.go -command search -name <bookName>
 ```
 
 ### get command
 ```
-go run main.go get <bookID>
-go run main.go get 5
+go run main.go -command get -ID <bookID>
 ```
 
 ### delete command
 ```
-go run main.go delete <bookID>
-go run main.go delete 5
+go run main.go -command delete -ID <bookID>
 ```
 
 ### buy command
 ```
-go run main.go buy <bookID> <quantity>
-go run main.go buy 5 2
+go run main.go -command buy -ID <bookID> -quantity <quantity>
 ```
 
-###
-# Requirements:
-- README
-- No third party package(s)
-- Everything should be in English (Comments, Function names, File names, etc.)
-- Use structs not maps
