@@ -1,0 +1,150 @@
+#Go’da concurrency
+
+İlk bilgisayarlar için programlama dilleri geliştirildiğinde bilgisayarlar tek işlemcili (çekirdekli) bilgisayarlar için geliştirildi.
+Zaman geçtikler tek işlemcinin yetersiz kalmaya başladı ve büyük ve kompleks problemleri çözmek için Cloud Sistemleri ortaya çıktı. Bu Sistemler birden fazla bilgisayarı bağlayarak işlemci güçlerini aynı zamanda kullanmak için geliştirildiler ama programlama dillerinin tek işlemcili yapısı buna engel oluyordu.
+Bu sorunu aşmak için Concurrency kavramı geliştirildi.
+Bilgisayarlar hala tek çekirdek çalışırken geliştirelen programa dillerine Library , framework yada methodology olarak eklenmeye başlandı. 
+Go bu durumdan farklı olarak özellikle 2010 sonrası çok çekirdekli bilgisayarların yaygınlaşmasının etkisiyle tamamen temelden concurreny yeteneği ile birlikte geliştirildi.
+Concurrrency nedir ? Theaded, Paralel, Asynchronous ?
+Concurrency aynı anda birçok işin bir seferde yapılması anlamına gelir.
+Örnek olarak 2 mektubu tek kalemle yazmak verilebilir.Paragrafı sağ elle yazdıktan sonra sol ölle yazarsın. Bu şekilde sürekli eline değiştirerek mektupları yazmayı bitirebilirsin. 
+Birçok işi kaynakları ve zamanı bölüşerek yapmak..
+Paralellism ise  işin aynı anda başlanıp aynı anda bitirilmesi anlamına gelir.
+Mektup örneğinde en iyi karşılığı iki elde iki kalemle 2 mektup yazmak verilebilir. İki elde eş zamanlı 2 mektubu yazar. 
+Birçok işi aynı anda yapma…
+
+
+Concurrency programcı tarafından kodlara eklenebilecek bir yapıdır.
+Paralellism bilgisayarlar tarafından karar verilir.
+Neden Önemli
+Squential programlama ilk öğrenilen ve çoğu zaman algoritma kurulurken tercih edilen ve bilgisayarların çalışma sistemine yakın yöntemdir.
+Ama concurrency sayesinde bu işlemleri daha verimli yapabiliriz.
+Örnek olarak graph search algoritmde algoritma graphdaki tek noktadan başlayıp son node(düğüm)e kadar gider.
+Eğer birçok çekirdek işlemde kullanılırsa her çekirdek ayrı yolu kullanrak çekirdek sayısı kadar hıza bölümde bitirebilir.
+
+#Tamam ama Neden Go ?
+
+Geleneksel olarak concurrency için programlama dilleri threadleri kullanır ve librarylerle bu dillere eklenir.
+Bu tip programlama dillerinde yapmamız gereken aşamalar:
+1)	Program threadleri nasıl uygulayacak
+2)	Threadleri uygulayan kodları implemante etmek
+3)	İstenen çıktıyı alamadığı fark etmek Nedeni deadlock, geçersiz memory access, senkronize operasyon olmaması …
+4)	Sorunu bulmak , çözmek tekrar konrtrol etmek
+5)	3 ve 4 tekrar
+6)	Program açılanamacak kadar kompleks hale geldi
+En önemlisi programlama dillerindekli Thread/Concurrency operasyonları birkaç faktöre bağlı
+1)	Dil nasıl OS thread hallediyor
+2)	Treadlerin stackleri ne kadar büyüklükte(yığınları)
+3)	Thread Pool(havuzunu) hallleden library(kütüphane) ne kadar verimli
+4)	Operasyon sırasında kaç çekirdek kullanılabilecek
+
+Go nun sağladığı avantajlar
+1)	Kasmayan hafif çalışan threadler
+2)	OS thread I yok. Sanal threadler multiplexed(dağıtılıyor?) ediliyor OS threadleri üzerine
+3)	 Birbirleriyle etkileşimde olan Channellar 
+4)	Kolay ve temiz uygulanma
+5)	Go runtime verimlili sağlayacak şekilde çalışması
+
+#GO Concurrency Örnekleri:
+1)Go Routines
+2)Blocking Operations
+3)Channels
+
+
+1)Go Routines
+'''
+package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func f(from string) {
+    for i := 0; i < 3; i++ {
+        fmt.Println(from, ":", i)
+    }
+}
+
+func main() {
+
+    f("direct")
+
+    go f("goroutine")
+
+    go func(msg string) {
+        fmt.Println(msg)
+    }("going")
+
+    time.Sleep(time.Second)
+    fmt.Println("done")
+}
+'''
+
+2)Blocking Operations
+'''
+package main
+
+import "fmt"
+
+func main() {
+    messages := make(chan string)
+    signals := make(chan bool)
+
+    select {
+    case msg := <-messages:
+        fmt.Println("received message", msg)
+    default:
+        fmt.Println("no message received")
+    }
+
+    msg := "hi"
+    select {
+    case messages <- msg:
+        fmt.Println("sent message", msg)
+    default:
+        fmt.Println("no message sent")
+    }
+
+    select {
+    case msg := <-messages:
+        fmt.Println("received message", msg)
+    case sig := <-signals:
+        fmt.Println("received signal", sig)
+    default:
+        fmt.Println("no activity")
+    }
+}
+'''
+
+3)Channels
+'''
+package main
+
+import "fmt"
+
+func sum(s []int, c chan int) {
+	sum := 0
+	for _, v := range s {
+		sum += v
+	}
+	c <- sum // send sum to c
+}
+
+func main() {
+	s := []int{7, 2, 8, -9, 4, 0}
+
+	c := make(chan int)
+	go sum(s[:len(s)/2], c)
+	go sum(s[len(s)/2:], c)
+	x, y := <-c, <-c // receive from c
+
+	fmt.Println(x, y, x+y)
+}
+'''
+_____________________________________________________
+### kaynakça
+https://gobyexample.com/
+https://medium.com/swlh/go-a-tale-of-concurrency-a-beginners-guide-b8976b26feb
+https://go.dev/tour/concurrency/2
+
