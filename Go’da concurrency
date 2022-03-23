@@ -1,4 +1,4 @@
-#Go’da concurrency
+# Go’da concurrency
 
 İlk bilgisayarlar için programlama dilleri geliştirildiğinde bilgisayarlar tek işlemcili (çekirdekli) bilgisayarlar için geliştirildi.
 Zaman geçtikler tek işlemcinin yetersiz kalmaya başladı ve büyük ve kompleks problemleri çözmek için Cloud Sistemleri ortaya çıktı. Bu Sistemler birden fazla bilgisayarı bağlayarak işlemci güçlerini aynı zamanda kullanmak için geliştirildiler ama programlama dillerinin tek işlemcili yapısı buna engel oluyordu.
@@ -52,7 +52,7 @@ Go nun sağladığı avantajlar
 
 
 1)Go Routines
-'''
+```
 package main
 
 import (
@@ -79,10 +79,10 @@ func main() {
     time.Sleep(time.Second)
     fmt.Println("done")
 }
-'''
+```
 
 2)Blocking Operations
-'''
+```
 package main
 
 import "fmt"
@@ -115,10 +115,10 @@ func main() {
         fmt.Println("no activity")
     }
 }
-'''
+```
 
 3)Channels
-'''
+```
 package main
 
 import "fmt"
@@ -141,7 +141,7 @@ func main() {
 
 	fmt.Println(x, y, x+y)
 }
-'''
+```
 _____________________________________________________
 ### kaynakça
 https://gobyexample.com/
